@@ -1,0 +1,21 @@
+replicaCount: 1
+
+autoscaling:
+  enabled: false
+
+pdb:
+  enabled: false
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+gateway:
+  enabled: true
+
+httpRoute:
+  enabled: true

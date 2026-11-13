@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  name: petclinic
+  namespace: argocd
+
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/Techy-T/spring-petclinic-gitops.git
+    targetRevision: main
+    path: apps/petclinic
+
+    helm:
+      valueFiles:
+        - values-prod.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: petclinic
+
+  syncPolicy:
+    automated:
+      enabled: false
