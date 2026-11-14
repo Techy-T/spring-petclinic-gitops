@@ -21,6 +21,8 @@ spec:
     server: https://kubernetes.default.svc
     namespace: petclinic
 
-  syncPolicy:
-    automated:
-      enabled: false
+syncPolicy:
+  automated:
+    enabled: true
+    selfHeal: true
+    prune: false
