@@ -23,4 +23,4 @@ httpRoute:
   enabled: true
 
 image:
-  tag: "2fcd32175adbfe2bc62edf198552fe81c4bec2ce"
+  tag: "6acb5e3d471e63580f54c5def3fd65057c9e48e6"
