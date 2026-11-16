@@ -1,0 +1,84 @@
+name: Promote PetClinic
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Environment to promote to
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+
+    environment: ${{ inputs.target }}
+
+    steps:
+      - name: Checkout GitOps repository
+        uses: actions/checkout@v7
+
+      - name: Determine source and target
+        run: |
+          set -euo pipefail
+
+          if [ "${{ inputs.target }}" = "staging" ]; then
+            echo "SOURCE_FILE=apps/petclinic/values-dev.yaml" >> "$GITHUB_ENV"
+            echo "TARGET_FILE=apps/petclinic/values-staging.yaml" >> "$GITHUB_ENV"
+            echo "SOURCE_ENV=dev" >> "$GITHUB_ENV"
+          else
+            echo "SOURCE_FILE=apps/petclinic/values-staging.yaml" >> "$GITHUB_ENV"
+            echo "TARGET_FILE=apps/petclinic/values-prod.yaml" >> "$GITHUB_ENV"
+            echo "SOURCE_ENV=staging" >> "$GITHUB_ENV"
+          fi
+
+      - name: Read source image tag
+        run: |
+          set -euo pipefail
+
+          SOURCE_TAG=$(grep -A2 "^image:" "$SOURCE_FILE" \
+            | awk '/tag:/ {gsub(/"/,"",$2); print $2}')
+
+          if [ -z "$SOURCE_TAG" ]; then
+            echo "Unable to determine image tag"
+            exit 1
+          fi
+
+          echo "SOURCE_TAG=$SOURCE_TAG" >> "$GITHUB_ENV"
+
+          echo "Promoting image:"
+          echo "$SOURCE_TAG"
+
+      - name: Update target environment
+        run: |
+          set -euo pipefail
+
+          sed -i -E \
+            "s|^  tag:.*$|  tag: \"${SOURCE_TAG}\"|" \
+            "$TARGET_FILE"
+
+          echo "Updated target:"
+          grep -A2 "^image:" "$TARGET_FILE"
+
+      - name: Commit promotion
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add "$TARGET_FILE"
+
+          if git diff --cached --quiet; then
+            echo "${{ inputs.target }} already uses ${SOURCE_TAG}"
+            exit 0
+          fi
+
+          git commit -m "promote: ${SOURCE_ENV} -> ${{ inputs.target }} ${SOURCE_TAG}"
+          git push origin main
