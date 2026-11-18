@@ -61,3 +61,10 @@ httpRoute:
   enabled: true
   name: petclinic
   pathPrefix: /
+
+workloadIdentity:
+  clientId: ""
+
+keyVault:
+  name: ""
+  tenantId: ""

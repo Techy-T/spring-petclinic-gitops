@@ -23,8 +23,10 @@ spec:
     metadata:
       labels:
         app: petclinic
+        azure.workload.identity/use: "true"
 
     spec:
+      serviceAccountName: petclinic
       containers:
         - name: petclinic
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -33,6 +35,19 @@ spec:
           ports:
             - name: http
               containerPort: {{ .Values.containerPort }}
+          
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: petclinic-keyvault
 
           env:
             - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE

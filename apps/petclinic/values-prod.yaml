@@ -24,3 +24,10 @@ httpRoute:
 
 image:
   tag: "6acb5e3d471e63580f54c5def3fd65057c9e48e6"
+
+workloadIdentity:
+  clientId: "YOUR-WORKLOAD-CLIENT-ID"
+
+keyVault:
+  name: "kvpetclinickydj7o"
+  tenantId: "YOUR-TENANT-ID"
