@@ -26,8 +26,8 @@ image:
   tag: "6acb5e3d471e63580f54c5def3fd65057c9e48e6"
 
 workloadIdentity:
-  clientId: "YOUR-WORKLOAD-CLIENT-ID"
+  clientId: "49676539-9c89-4d22-bf80-ced6dbef5243"
 
 keyVault:
   name: "kvpetclinickydj7o"
-  tenantId: "YOUR-TENANT-ID"
+  tenantId: "5cf4eced-751d-487f-a48e-c1ea6c7e1d59"
